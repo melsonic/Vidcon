@@ -2,7 +2,6 @@ package core
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -37,7 +36,6 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("upgrade :", err)
 		return
 	}
-	defer conn.Close()
 	user := &User{
 		conn:        conn,
 		connSend:    make(chan []byte),
@@ -81,7 +79,6 @@ func (u *User) WriteConn() {
 		case message, ok := <-u.connSend:
 			u.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
-				// The hub closed the channel.
 				u.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
@@ -117,7 +114,6 @@ type UserStore struct {
 
 func (us *UserStore) AddUser(user *User) {
 	us.users = append(us.users, user)
-	fmt.Println(len(us.users))
 }
 
 func (us *UserStore) MatchUsers() {
@@ -130,5 +126,6 @@ func (us *UserStore) MatchUsers() {
 	room := NewRoom(user1, user2)
 	go room.ReadUser1()
 	go room.ReadUser2()
+	us.users = us.users[1 : len(us.users)-1]
 	us.MatchUsers()
 }
