@@ -117,3 +117,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+:root{
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
