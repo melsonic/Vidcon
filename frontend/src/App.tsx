@@ -30,7 +30,7 @@ function App() {
     playVideoFromCamera();
   }, [videoRef])
 
-  if (waiting || !localUserAudioTrack || !localUserVideoTrack || ws === null) {
+  if (waiting || !ws || !localUserVideoTrack || !localUserAudioTrack) {
     return (
       <div className="flex flex-col justify-center h-screen max-w-sm items-center space-x-2 mx-auto">
         <video autoPlay width={500} height={500} className="drop-shadow-md my-8" id="localVideo" ref={videoRef} />
@@ -43,7 +43,7 @@ function App() {
             console.log("connection opened!")
           }
           setWS(websocket);
-          setWaiting(true);
+          setWaiting(false);
         }} className="my-4">Connect</Button>
       </div>
     )
