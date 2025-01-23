@@ -11,6 +11,7 @@ function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [localUserVideoTrack, setLocalUserVideoTrack] = useState<MediaStreamTrack | null>(null);
   const [localUserAudioTrack, setLocalUserAudioTrack] = useState<MediaStreamTrack | null>(null);
+  const [localStream, setLocalStream] = useState<MediaStream|null>(null);
 
   useEffect(() => {
     async function playVideoFromCamera() {
@@ -20,9 +21,10 @@ function App() {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         let videoTrack = stream.getVideoTracks()[0];
         let audioTrack = stream.getAudioTracks()[0];
-        setLocalUserVideoTrack(videoTrack);
-        setLocalUserAudioTrack(audioTrack);
+        // setLocalUserVideoTrack(videoTrack);
+        // setLocalUserAudioTrack(audioTrack);
         videoRef.current.srcObject = new MediaStream([videoTrack])
+        setLocalStream(stream);
       } catch (error) {
         console.error('Error opening video camera.', error);
       }
@@ -30,7 +32,7 @@ function App() {
     playVideoFromCamera();
   }, [videoRef])
 
-  if (waiting || !ws || !localUserVideoTrack || !localUserAudioTrack) {
+  if (waiting || !ws || !localStream) {
     return (
       <div className="flex flex-col justify-center h-screen max-w-sm items-center space-x-2 mx-auto">
         <video autoPlay width={500} height={500} className="drop-shadow-md my-8" id="localVideo" ref={videoRef} />
@@ -50,7 +52,7 @@ function App() {
   }
 
   return (
-    <VideoChat localUserVideoTrack={localUserVideoTrack} localUserAudioTrack={localUserAudioTrack} websocket={ws} name={name} />
+    <VideoChat localStream={localStream} websocket={ws} name={name} />
   )
 }
 
