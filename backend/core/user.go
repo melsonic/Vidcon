@@ -124,6 +124,7 @@ func (us *UserStore) MatchUsers() {
 	user2 := us.users[len(us.users)-1]
 	// create room
 	room := NewRoom(user1, user2)
+	room.StartExchange()
 	go room.ReadUser1()
 	go room.ReadUser2()
 	us.users = us.users[1 : len(us.users)-1]

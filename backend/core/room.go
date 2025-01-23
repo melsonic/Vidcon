@@ -8,6 +8,10 @@ type Room struct {
 	user2  *User
 }
 
+func (r *Room) StartExchange() {
+	r.user1.connSend <- []byte("start")
+}
+
 func (r *Room) ReadUser1() {
 	for {
 		msg := <-r.user1.connReceive
