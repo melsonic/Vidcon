@@ -35,8 +35,8 @@ function App() {
   if (waiting || !ws || !localStream) {
     return (
       <div className="flex flex-col justify-center h-screen max-w-sm items-center space-x-2 mx-auto">
-        <video autoPlay width={500} height={500} className="drop-shadow-md my-8" id="localVideo" ref={videoRef} />
-        <Input type="text" placeholder="Name" onChange={(e) => {
+        <video autoPlay width={500} height={500} className="drop-shadow-md my-8 border" id="localVideo" ref={videoRef} />
+        <Input type="text" placeholder="Name" className="text-white" onChange={(e) => {
           setName(e.target.value);
         }} />
         <Button type="submit" onClick={(_e) => {

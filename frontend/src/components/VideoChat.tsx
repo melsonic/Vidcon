@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import {MessageArea} from "./ui/message";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export default function VideoChat({ localStream, websocket, name }: { localStream: MediaStream, websocket: WebSocket, name: string }) {
     const localUserVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -6,9 +9,14 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
     const [remoteUserVideoTrack, setRemoteUserVideoTrack] = useState<MediaStreamTrack | null>(null);
     const [remoteUserAudioTrack, setRemoteUserAudioTrack] = useState<MediaStreamTrack | null>(null);
-    const [waiting, setWaiting] = useState(true);
     const [callingPeer, setCallingPeer] = useState<RTCPeerConnection | null>(null);
     const [receivingPeer, setReceivingPeer] = useState<RTCPeerConnection | null>(null);
+    const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
+    const [message, setMessage] = useState<string>("");
+    const [sentMessages, setSentMessages] = useState<Array<string>>([]);
+    const [receivedMessages, setReceivedMessages] = useState<Array<string>>([]);
+    let count = 0;
+    const msgRef = useRef(null);
 
     useEffect(() => {
         websocket.onmessage = async (e) => {
@@ -22,6 +30,7 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                     pc.addTrack(track, localStream)
                 })
                 const dataChannel = pc.createDataChannel("dc");
+                setDataChannel(dataChannel);
                 const offer = await pc.createOffer()
                 await pc.setLocalDescription(offer)
                 websocket.send(JSON.stringify({ 'offer': offer }))
@@ -60,10 +69,13 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                         const [remoteStream] = e.streams
                         setRemoteStream(remoteStream)
                     }
-                    pc.setRemoteDescription(new RTCSessionDescription(messageobj.offer))
+                    await pc.setRemoteDescription(new RTCSessionDescription(messageobj.offer))
                     const answer = await pc.createAnswer()
                     await pc.setLocalDescription(answer)
                     websocket.send(JSON.stringify({ 'answer': answer }))
+                    pc.addEventListener('datachannel', e => {
+                        setDataChannel(e.channel);
+                    })
                     pc.onicecandidate = (e) => {
                         if (e.candidate) {
                             websocket.send(JSON.stringify({ 'receiverIceCandidate': e.candidate }))
@@ -119,11 +131,40 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
         setRemoteUserAudioTrack(audioTrack)
     }, [remoteStream, remoteUserVideoRef.current])
 
+    useEffect(() => {
+        if (dataChannel === null) return;
+        function printMessage(e: MessageEvent) {
+            setReceivedMessages(previousMessages => [...previousMessages, e.data])
+        }
+        dataChannel.addEventListener('message', printMessage);
+        return () => {
+            dataChannel.removeEventListener('message', printMessage);
+        }
+    }, [dataChannel]);
+
     return (
-        <div className="flex flex-col mx-auto justify-center items-center">
-            <p>Hi {name}</p>
-            <video autoPlay width={500} height={500} className="drop-shadow-md my-8 border-2 border-black" id="localVideo" ref={localUserVideoRef} />
-            <video autoPlay width={500} height={500} className="drop-shadow-md my-8 border-2 border-black" id="remoteVideo" ref={remoteUserVideoRef} />
+        <div className="flex mx-auto">
+            <div className="flex flex-col mr-12">
+                <p>Hi {name}</p>
+                <video autoPlay width={500} height={500} className="my-8 border drop-shadow-2xl" id="localVideo" ref={localUserVideoRef} />
+                <video autoPlay width={500} height={500} className="my-8 border drop-shadow-2xl" id="remoteVideo" ref={remoteUserVideoRef} />
+            </div>
+            <div className="flex flex-col ml-12 rounded-sm h-[800px] w-96 overflow-y-scroll space-y-4 border shadow p-6">
+                {/* chat form */}
+                <MessageArea sent={sentMessages} received={receivedMessages} />
+                <div className="flex">
+                    <Input className="mb-0 text-white" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
+                        setMessage(e.target.value);
+                    }} />
+                    <Button onClick={() => {
+                        console.log(dataChannel)
+                        if(dataChannel === null) return;
+                        dataChannel.send(message);
+                        setSentMessages([...sentMessages, message]);
+                        setMessage("");
+                    }}>Send</Button>
+                </div>
+            </div>
         </div>
     )
 }
