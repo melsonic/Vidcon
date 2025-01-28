@@ -11,7 +11,8 @@ function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [localUserVideoTrack, setLocalUserVideoTrack] = useState<MediaStreamTrack | null>(null);
   const [localUserAudioTrack, setLocalUserAudioTrack] = useState<MediaStreamTrack | null>(null);
-  const [localStream, setLocalStream] = useState<MediaStream|null>(null);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const nameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     async function playVideoFromCamera() {
@@ -34,19 +35,25 @@ function App() {
 
   if (waiting || !ws || !localStream) {
     return (
-      <div className="flex flex-col justify-center h-screen max-w-sm items-center space-x-2 mx-auto">
-        <video autoPlay width={500} height={500} className="drop-shadow-md my-8 border" id="localVideo" ref={videoRef} />
-        <Input type="text" placeholder="Name" className="text-white" onChange={(e) => {
-          setName(e.target.value);
-        }} />
-        <Button type="submit" onClick={(_e) => {
-          let websocket = new WebSocket("ws://localhost:8080/ws")
-          websocket.onopen = (_e) => {
-            console.log("connection opened!")
-          }
-          setWS(websocket);
-          setWaiting(false);
-        }} className="my-4">Connect</Button>
+      <div className="bg-lightorange text-center">
+        <div className="font-bold text-6xl text-darkblue absolute w-screen mx-auto mt-16">MAKE NEW FRIENDS</div>
+        <div className="flex flex-col justify-center h-screen items-center space-x-2 mx-auto">
+          <video autoPlay width={500} height={450} className="drop-shadow-md my-8 border-2 border-black" id="localVideo" ref={videoRef} />
+          <div className='flex items-center'>
+            <Input type="text" placeholder="Name" className="rounded-md border-black w-96 h-10" onChange={(e) => {
+              setName(e.target.value);
+            }} ref={nameRef} />
+            <Button type="submit" onClick={(_e) => {
+              if(nameRef.current === null || nameRef.current.value === "") return;
+              let websocket = new WebSocket("ws://localhost:8080/ws")
+              websocket.onopen = (_e) => {
+                console.log("connection opened!")
+              }
+              setWS(websocket);
+              setWaiting(false);
+            }} className="w-24 rounded-md text-white bg-darkorange ml-4 text-xl h-10 shadow-lg">Join</Button>
+          </div>
+        </div>
       </div>
     )
   }
