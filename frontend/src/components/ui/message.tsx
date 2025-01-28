@@ -1,4 +1,4 @@
-export function MessageArea({ sent, received }: { sent: Array<string>; received: Array<string> }) {
+export function MessageArea({ sent, received, firstMessage }: { sent: Array<string>; received: Array<string>; firstMessage: boolean }) {
     console.log(`sent len = ${sent.length}`)
     console.log(`received len = ${received.length}`)
 
@@ -6,20 +6,29 @@ export function MessageArea({ sent, received }: { sent: Array<string>; received:
 
     const combinedMessages = [];
     for (let i = 0; i < maxLength; i++) {
+        let sm = null, rm = null;
         if (i < sent.length) {
-            combinedMessages.push(
-                <div key={`sent-${i}`} className="bg-gray-300 text-black">
-                    {sent[i]}
-                </div>
-            );
+            sm = <div key={`sent-${i}`} className="bg-gray-300 text-black rounded-sm my-2">
+                {sent[i]}
+            </div>;
         }
         if (i < received.length) {
-            combinedMessages.push(
-                <div key={`received-${i}`} className="bg-gray-700 text-white">
-                    {received[i]}
-                </div>
-            );
+            rm = <div key={`received-${i}`} className="bg-gray-700 text-white rounded-sm my-2">
+                {received[i]}
+            </div>;
         }
+        if(sm !== null && rm !== null) {
+            console.log(firstMessage);
+            if(firstMessage) {
+                combinedMessages.push(sm, rm);
+            } else {
+                combinedMessages.push(rm, sm);
+            }
+        } else {
+            if(sm !== null) combinedMessages.push(sm);
+            if(rm !== null) combinedMessages.push(rm);
+        }
+        
     }
 
     // Render combined messages

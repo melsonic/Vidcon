@@ -15,8 +15,8 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     const [message, setMessage] = useState<string>("");
     const [sentMessages, setSentMessages] = useState<Array<string>>([]);
     const [receivedMessages, setReceivedMessages] = useState<Array<string>>([]);
-    let count = 0;
-    const msgRef = useRef(null);
+    const [flag, setFlag] = useState<boolean>(false);
+    const msgRef = useRef<HTMLInputElement|null>(null);
 
     useEffect(() => {
         websocket.onmessage = async (e) => {
@@ -92,7 +92,6 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                         pc?.setRemoteDescription(new RTCSessionDescription(messageobj.answer))
                         return pc
                     })
-                    // pc.setRemoteDescription(new RTCSessionDescription(messageobj.answer))
                 } else if (messageobj.callerIceCandidate) {
                     try {
                         setReceivingPeer(pc => {
@@ -151,17 +150,20 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
             </div>
             <div className="flex flex-col ml-12 rounded-sm h-[800px] w-96 overflow-y-scroll space-y-4 border shadow p-6">
                 {/* chat form */}
-                <MessageArea sent={sentMessages} received={receivedMessages} />
+                <MessageArea sent={sentMessages} received={receivedMessages} firstMessage={flag} />
                 <div className="flex">
                     <Input className="mb-0 text-white" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
                         setMessage(e.target.value);
                     }} />
                     <Button onClick={() => {
-                        console.log(dataChannel)
-                        if(dataChannel === null) return;
+                        if(msgRef.current === null || dataChannel === null) return;
+                        if(receivedMessages.length === 0) {
+                            setFlag(true);
+                        }
                         dataChannel.send(message);
                         setSentMessages([...sentMessages, message]);
                         setMessage("");
+                        msgRef.current.value = "";
                     }}>Send</Button>
                 </div>
             </div>
