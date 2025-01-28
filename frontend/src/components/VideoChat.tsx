@@ -149,7 +149,6 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                 <video autoPlay width={500} height={500} className="my-8 border drop-shadow-2xl" id="remoteVideo" ref={remoteUserVideoRef} />
             </div>
             <div className="flex flex-col ml-12 rounded-sm h-[800px] w-96 overflow-y-scroll space-y-4 border shadow p-6">
-                {/* chat form */}
                 <MessageArea sent={sentMessages} received={receivedMessages} firstMessage={flag} />
                 <div className="flex">
                     <Input className="mb-0 text-white" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {

@@ -1,7 +1,4 @@
 export function MessageArea({ sent, received, firstMessage }: { sent: Array<string>; received: Array<string>; firstMessage: boolean }) {
-    console.log(`sent len = ${sent.length}`)
-    console.log(`received len = ${received.length}`)
-
     const maxLength = Math.max(sent.length, received.length);
 
     const combinedMessages = [];
