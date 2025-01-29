@@ -5,12 +5,12 @@ export function MessageArea({ sent, received, firstMessage }: { sent: Array<stri
     for (let i = 0; i < maxLength; i++) {
         let sm = null, rm = null;
         if (i < sent.length) {
-            sm = <div key={`sent-${i}`} className="bg-gray-300 text-black rounded-sm my-2">
+            sm = <div key={`sent-${i}`} className="bg-lightblue text-black rounded-lg my-2 self-end px-4 py-2 max-w-96">
                 {sent[i]}
             </div>;
         }
         if (i < received.length) {
-            rm = <div key={`received-${i}`} className="bg-gray-700 text-white rounded-sm my-2">
+            rm = <div key={`received-${i}`} className="bg-darkblue text-white rounded-lg my-2 self-start px-4 py-2 max-w-96">
                 {received[i]}
             </div>;
         }
@@ -29,5 +29,5 @@ export function MessageArea({ sent, received, firstMessage }: { sent: Array<stri
     }
 
     // Render combined messages
-    return <div>{combinedMessages}</div>;
+    return <div className="h-[750px] flex flex-col">{combinedMessages}</div>;
 }

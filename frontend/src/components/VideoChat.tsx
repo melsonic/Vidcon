@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {MessageArea} from "./ui/message";
+import { MessageArea } from "./ui/message";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
@@ -16,7 +16,7 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     const [sentMessages, setSentMessages] = useState<Array<string>>([]);
     const [receivedMessages, setReceivedMessages] = useState<Array<string>>([]);
     const [flag, setFlag] = useState<boolean>(false);
-    const msgRef = useRef<HTMLInputElement|null>(null);
+    const msgRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         websocket.onmessage = async (e) => {
@@ -142,28 +142,29 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     }, [dataChannel]);
 
     return (
-        <div className="flex mx-auto">
-            <div className="flex flex-col mr-12">
-                <p>Hi {name}</p>
-                <video autoPlay width={500} height={500} className="my-8 border drop-shadow-2xl" id="localVideo" ref={localUserVideoRef} />
-                <video autoPlay width={500} height={500} className="my-8 border drop-shadow-2xl" id="remoteVideo" ref={remoteUserVideoRef} />
+        <div className="flex items-center mx-auto bg-lightorange px-20 h-screen">
+            <div className="flex flex-col justify-between mr-12 h-[830px]">
+                <video autoPlay width={520} height={350} className="border drop-shadow-2xl border-black" id="localVideo" ref={localUserVideoRef} />
+                <video autoPlay width={520} height={350} className="border drop-shadow-2xl border-black" id="remoteVideo" ref={remoteUserVideoRef} />
             </div>
-            <div className="flex flex-col ml-12 rounded-sm h-[800px] w-96 overflow-y-scroll space-y-4 border shadow p-6">
+            <div className="flex flex-col ml-12 rounded-sm h-[830px] w-3/5 overflow-y-scroll space-y-4 border shadow p-6 border-black">
                 <MessageArea sent={sentMessages} received={receivedMessages} firstMessage={flag} />
                 <div className="flex">
-                    <Input className="mb-0 text-white" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
+                    <Input className="mb-0 outline-none border-black" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
                         setMessage(e.target.value);
                     }} />
                     <Button onClick={() => {
-                        if(msgRef.current === null || dataChannel === null) return;
-                        if(receivedMessages.length === 0) {
+                        if (msgRef.current === null || dataChannel === null) return;
+                        if (receivedMessages.length === 0) {
                             setFlag(true);
                         }
                         dataChannel.send(message);
                         setSentMessages([...sentMessages, message]);
                         setMessage("");
                         msgRef.current.value = "";
-                    }}>Send</Button>
+                    }}
+                        className="bg-darkorange ml-2"
+                    >Send</Button>
                 </div>
             </div>
         </div>
