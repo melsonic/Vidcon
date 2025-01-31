@@ -35,23 +35,25 @@ function App() {
 
   if (waiting || !ws || !localStream) {
     return (
-      <div className="bg-lightorange text-center">
-        <div className="font-bold text-6xl text-darkblue absolute w-screen mx-auto mt-16">MAKE NEW FRIENDS</div>
-        <div className="flex flex-col justify-center h-screen items-center space-x-2 mx-auto">
-          <video autoPlay width={500} height={450} className="drop-shadow-md my-8 border-2 border-black bg-white" id="localVideo" ref={videoRef} />
-          <div className='flex items-center'>
-            <Input type="text" placeholder="Name" className="rounded-md border-black w-96 h-10" onChange={(e) => {
-              setName(e.target.value);
-            }} ref={nameRef} />
-            <Button type="submit" onClick={(_e) => {
-              if(nameRef.current === null || nameRef.current.value === "") return;
-              let websocket = new WebSocket("ws://localhost:8080/ws")
-              websocket.onopen = (_e) => {
-                console.log("connection opened!")
-              }
-              setWS(websocket);
-              setWaiting(false);
-            }} className="w-24 rounded-md text-white bg-darkorange ml-4 text-xl h-10 shadow-lg">Join</Button>
+      <div className="bg-lightorange text-center h-screen w-screen flex justify-center">
+        <div className="w-80 mx-auto md:w-96 lg:w-132">
+          <div className="flex flex-col justify-center h-screen items-center mx-auto">
+            <div className="font-bold text-3xl text-darkblue mb-8 py-1 border-transparent border-b-darkblue border-2 md:text-4xl lg:text-5xl">MAKE NEW FRIENDS</div>
+            <video autoPlay className="w-full drop-shadow-md my-8 border-2 border-black bg-white" id="localVideo" ref={videoRef} />
+            <div className='flex flex-col items-center lg:flex-row'>
+              <Input type="text" placeholder="Name" className="rounded-md border-black w-80 h-10 md:w-96 lg:w-104 lg:mr-2" onChange={(e) => {
+                setName(e.target.value);
+              }} ref={nameRef} />
+              <Button type="submit" onClick={(_e) => {
+                if (nameRef.current === null || nameRef.current.value === "") return;
+                let websocket = new WebSocket("ws://localhost:8080/ws")
+                websocket.onopen = (_e) => {
+                  console.log("connection opened!")
+                }
+                setWS(websocket);
+                setWaiting(false);
+              }} className="w-24 rounded-md text-white bg-darkorange text-xl h-10 shadow-lg mt-2 lg:mt-0 lg:ml-2">Join</Button>
+            </div>
           </div>
         </div>
       </div>
