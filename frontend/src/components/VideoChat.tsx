@@ -142,15 +142,15 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     }, [dataChannel]);
 
     return (
-        <div className="flex items-center mx-auto bg-lightorange px-20 h-screen">
-            <div className="flex flex-col justify-between mr-12 h-[830px]">
-                <video autoPlay width={520} height={350} className="border drop-shadow-2xl border-black" id="localVideo" ref={localUserVideoRef} />
-                <video autoPlay width={520} height={350} className="border drop-shadow-2xl border-black" id="remoteVideo" ref={remoteUserVideoRef} />
+        <div className="flex flex-col p-8 lg:flex-row lg:h-screen">
+            <div className="w-80 mx-auto md:w-96 lg:w-140 lg:h-full lg:mx-0 flex-none flex flex-col lg:justify-between">
+                <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mb-2" id="localVideo" ref={localUserVideoRef} />
+                <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mt-2" id="remoteVideo" ref={remoteUserVideoRef} />
             </div>
-            <div className="flex flex-col ml-12 rounded-sm h-[830px] w-3/5 overflow-y-scroll space-y-4 border shadow p-6 border-black">
+            <div className="flex flex-col w-80 mx-auto border-2 border-black h-80 mt-2 md:w-96 lg:mx-0 lg:h-auto lg:mt-0 lg:ml-12 grow">
                 <MessageArea sent={sentMessages} received={receivedMessages} firstMessage={flag} />
-                <div className="flex">
-                    <Input className="mb-0 outline-none border-black" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
+                <div className="flex p-2 py-4 mt-auto">
+                    <Input className="mr-1 focus:outline-hidden focus:border-lightblue" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
                         setMessage(e.target.value);
                     }} />
                     <Button onClick={() => {
@@ -163,7 +163,7 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                         setMessage("");
                         msgRef.current.value = "";
                     }}
-                        className="bg-darkorange ml-2"
+                        className="ml-1 bg-darkorange"
                     >Send</Button>
                 </div>
             </div>

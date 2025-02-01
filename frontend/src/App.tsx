@@ -1,4 +1,3 @@
-import './App.css'
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -39,7 +38,7 @@ function App() {
         <div className="w-80 mx-auto md:w-96 lg:w-132">
           <div className="flex flex-col justify-center h-screen items-center mx-auto">
             <div className="font-bold text-3xl text-darkblue mb-8 py-1 border-transparent border-b-darkblue border-2 md:text-4xl lg:text-5xl">MAKE NEW FRIENDS</div>
-            <video autoPlay className="w-full drop-shadow-md my-8 border-2 border-black bg-white" id="localVideo" ref={videoRef} />
+            <video autoPlay className="w-full drop-shadow-md my-8 border-2 border-black bg-white aspect-[4/3] object-cover" id="localVideo" ref={videoRef} />
             <div className='flex flex-col items-center lg:flex-row'>
               <Input type="text" placeholder="Name" className="rounded-md border-black w-80 h-10 md:w-96 lg:w-104 lg:mr-2" onChange={(e) => {
                 setName(e.target.value);

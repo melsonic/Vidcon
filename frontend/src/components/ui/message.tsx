@@ -29,5 +29,5 @@ export function MessageArea({ sent, received, firstMessage }: { sent: Array<stri
     }
 
     // Render combined messages
-    return <div className="h-[750px] flex flex-col">{combinedMessages}</div>;
+    return <div className="flex flex-col h-full overflow-y-scroll p-4">{combinedMessages}</div>;
 }
