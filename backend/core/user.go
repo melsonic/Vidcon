@@ -28,6 +28,7 @@ var (
 	newline            = []byte{'\n'}
 	space              = []byte{' '}
 	us      *UserStore = &UserStore{users: make([]*User, 0)}
+	USER_ID int64      = 1
 )
 
 func WSHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,10 +38,13 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &User{
+		userId:      USER_ID,
 		conn:        conn,
 		connSend:    make(chan []byte),
 		connReceive: make(chan []byte),
 	}
+	// update user id for next user
+	USER_ID += 1
 	us.AddUser(user)
 	go user.ReadConn()
 	go user.WriteConn()
@@ -48,13 +52,17 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type User struct {
+	userId      int64 // will help in deleting user from userStore queue
 	conn        *websocket.Conn
 	connSend    chan []byte
 	connReceive chan []byte
 }
 
 func (u *User) ReadConn() {
-	defer u.conn.Close()
+	defer func() {
+		us.DeleteUser(u)
+		u.conn.Close()
+	}()
 	for {
 		_, msg, err := u.conn.ReadMessage()
 		if err != nil {
@@ -72,6 +80,8 @@ func (u *User) WriteConn() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
+		// remove user before closing the websocket connection
+		us.DeleteUser(u)
 		u.conn.Close()
 	}()
 	for {
@@ -114,6 +124,22 @@ type UserStore struct {
 
 func (us *UserStore) AddUser(user *User) {
 	us.users = append(us.users, user)
+}
+
+func (us *UserStore) DeleteUser(user *User) {
+	var ixToRemove int64 = -1
+	for index, usUser := range us.users {
+		if usUser.userId == user.userId {
+			ixToRemove = int64(index)
+			break
+		}
+	}
+	// if no user found return (user is already removed)
+	if ixToRemove == -1 {
+		return
+	}
+	us.users[ixToRemove] = us.users[len(us.users)-1]
+	us.users = us.users[:len(us.users)-1]
 }
 
 func (us *UserStore) MatchUsers() {
