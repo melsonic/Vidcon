@@ -9,6 +9,7 @@ module.exports = {
 			"lightblue": "#80C4E9",
 			"lightorange": "#FFF6E9",
 			"darkorange": "#FF7F3E",
+			"darkorange++": "#ff5600",
   		},
 		width: {
 			"100": "25rem",

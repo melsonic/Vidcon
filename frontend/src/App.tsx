@@ -51,7 +51,7 @@ function App() {
                 }
                 setWS(websocket);
                 setWaiting(false);
-              }} className="w-24 rounded-md text-white bg-darkorange text-xl h-10 shadow-lg mt-2 lg:mt-0 lg:ml-2">Join</Button>
+              }} className="w-24 rounded-md text-white bg-darkorange text-xl h-10 shadow-xl mt-2 lg:mt-0 lg:ml-2 hover:bg-darkorange++">Join</Button>
             </div>
           </div>
         </div>

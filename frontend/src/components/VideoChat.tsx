@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { MessageArea } from "./ui/message";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import Video from "./ui/video";
 
 export default function VideoChat({ localStream, websocket, name }: { localStream: MediaStream, websocket: WebSocket, name: string }) {
     const localUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const remoteUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-    const [remoteUserVideoTrack, setRemoteUserVideoTrack] = useState<MediaStreamTrack | null>(null);
-    const [remoteUserAudioTrack, setRemoteUserAudioTrack] = useState<MediaStreamTrack | null>(null);
-    const [callingPeer, setCallingPeer] = useState<RTCPeerConnection | null>(null);
-    const [receivingPeer, setReceivingPeer] = useState<RTCPeerConnection | null>(null);
+    // const [remoteUserVideoTrack, setRemoteUserVideoTrack] = useState<MediaStreamTrack | null>(null);
+    // const [remoteUserAudioTrack, setRemoteUserAudioTrack] = useState<MediaStreamTrack | null>(null);
+    const [_callingPeer, setCallingPeer] = useState<RTCPeerConnection | null>(null);
+    const [_receivingPeer, setReceivingPeer] = useState<RTCPeerConnection | null>(null);
     const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
     const [message, setMessage] = useState<string>("");
     const [sentMessages, setSentMessages] = useState<Array<string>>([]);
@@ -118,16 +119,17 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     useEffect(() => {
         if (localUserVideoRef.current === null || localStream === null || localStream === undefined) return;
         let videoTrack = localStream.getVideoTracks()[0];
-        localUserVideoRef.current.srcObject = new MediaStream([videoTrack])
+        let audioTrack = localStream.getAudioTracks()[0];
+        localUserVideoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
     }, [localStream, localUserVideoRef.current])
 
     useEffect(() => {
         if (remoteUserVideoRef.current === null || remoteStream === null || remoteStream === undefined) return;
         let videoTrack = remoteStream.getVideoTracks()[0];
         let audioTrack = remoteStream.getAudioTracks()[0];
-        remoteUserVideoRef.current.srcObject = new MediaStream([videoTrack])
-        setRemoteUserVideoTrack(videoTrack)
-        setRemoteUserAudioTrack(audioTrack)
+        remoteUserVideoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
+        // setRemoteUserVideoTrack(videoTrack)
+        // setRemoteUserAudioTrack(audioTrack)
     }, [remoteStream, remoteUserVideoRef.current])
 
     useEffect(() => {
@@ -142,15 +144,21 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     }, [dataChannel]);
 
     return (
-        <div className="flex flex-col p-8 lg:flex-row lg:h-screen">
+        <div className="flex flex-col p-8 min-h-screen lg:flex-row lg:h-screen bg-lightorange">
             <div className="w-80 mx-auto md:w-96 lg:w-140 lg:h-full lg:mx-0 flex-none flex flex-col lg:justify-between">
-                <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mb-2" id="localVideo" ref={localUserVideoRef} />
-                <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mt-2" id="remoteVideo" ref={remoteUserVideoRef} />
+                {/* <div>
+                    <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mb-2 rounded-sm" id="localVideo" ref={localUserVideoRef} />
+                </div>
+                <div>
+                    <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mt-2 rounded-sm" id="remoteVideo" ref={remoteUserVideoRef} />
+                </div> */}
+                <Video videoRef={localUserVideoRef} localStream={localStream} />
+                <Video videoRef={remoteUserVideoRef} localStream={null}/>
             </div>
-            <div className="flex flex-col w-80 mx-auto border-2 border-black h-80 mt-2 md:w-96 lg:mx-0 lg:h-auto lg:mt-0 lg:ml-12 grow">
+            <div className="flex flex-col w-80 mx-auto border-2 border-black h-80 mt-2 md:w-96 lg:mx-0 lg:h-auto lg:mt-0 lg:ml-12 grow rounded-sm">
                 <MessageArea sent={sentMessages} received={receivedMessages} firstMessage={flag} />
                 <div className="flex p-2 py-4 mt-auto">
-                    <Input className="mr-1 focus:outline-hidden focus:border-lightblue" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
+                    <Input type="text" className="mr-1 focus:outline-hidden" placeholder="enter message" id="msg" ref={msgRef} onChange={(e) => {
                         setMessage(e.target.value);
                     }} />
                     <Button onClick={() => {
@@ -163,7 +171,7 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                         setMessage("");
                         msgRef.current.value = "";
                     }}
-                        className="ml-1 bg-darkorange"
+                        className="ml-1 text-white bg-darkorange hover:bg-darkorange++"
                     >Send</Button>
                 </div>
             </div>
