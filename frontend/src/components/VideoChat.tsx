@@ -8,8 +8,6 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     const localUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const remoteUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-    // const [remoteUserVideoTrack, setRemoteUserVideoTrack] = useState<MediaStreamTrack | null>(null);
-    // const [remoteUserAudioTrack, setRemoteUserAudioTrack] = useState<MediaStreamTrack | null>(null);
     const [_callingPeer, setCallingPeer] = useState<RTCPeerConnection | null>(null);
     const [_receivingPeer, setReceivingPeer] = useState<RTCPeerConnection | null>(null);
     const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
@@ -128,8 +126,6 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
         let videoTrack = remoteStream.getVideoTracks()[0];
         let audioTrack = remoteStream.getAudioTracks()[0];
         remoteUserVideoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
-        // setRemoteUserVideoTrack(videoTrack)
-        // setRemoteUserAudioTrack(audioTrack)
     }, [remoteStream, remoteUserVideoRef.current])
 
     useEffect(() => {
@@ -146,12 +142,6 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     return (
         <div className="flex flex-col p-8 min-h-screen lg:flex-row lg:h-screen bg-lightorange">
             <div className="w-80 mx-auto md:w-96 lg:w-140 lg:h-full lg:mx-0 flex-none flex flex-col lg:justify-between">
-                {/* <div>
-                    <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mb-2 rounded-sm" id="localVideo" ref={localUserVideoRef} />
-                </div>
-                <div>
-                    <video autoPlay className="border-2 border-black bg-white aspect-[4/3] object-cover mt-2 rounded-sm" id="remoteVideo" ref={remoteUserVideoRef} />
-                </div> */}
                 <Video videoRef={localUserVideoRef} localStream={localStream} />
                 <Video videoRef={remoteUserVideoRef} localStream={null}/>
             </div>

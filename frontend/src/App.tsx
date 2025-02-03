@@ -8,8 +8,6 @@ function App() {
   const [ws, setWS] = useState<WebSocket | null>(null);
   const [name, setName] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [localUserVideoTrack, setLocalUserVideoTrack] = useState<MediaStreamTrack | null>(null);
-  const [localUserAudioTrack, setLocalUserAudioTrack] = useState<MediaStreamTrack | null>(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
 
@@ -21,9 +19,7 @@ function App() {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         let videoTrack = stream.getVideoTracks()[0];
         let audioTrack = stream.getAudioTracks()[0];
-        // setLocalUserVideoTrack(videoTrack);
-        // setLocalUserAudioTrack(audioTrack);
-        videoRef.current.srcObject = new MediaStream([videoTrack])
+        videoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
         setLocalStream(stream);
       } catch (error) {
         console.error('Error opening video camera.', error);
