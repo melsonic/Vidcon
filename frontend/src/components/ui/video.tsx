@@ -17,7 +17,7 @@ export default function Video({ videoRef, localStream }: { videoRef: React.Mutab
         if (!audio) {
             localStream?.getAudioTracks().forEach(audioTrack => audioTrack.enabled = false)
         } else {
-            localStream?.getAudioTracks().forEach(audioTrack => audioTrack.enabled = false)
+            localStream?.getAudioTracks().forEach(audioTrack => audioTrack.enabled = true)
         }
     }, [audio])
 
