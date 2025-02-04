@@ -4,8 +4,7 @@ import { Input } from '@/components/ui/input';
 import VideoChat from '@/components/VideoChat';
 
 function App() {
-  const [waiting, setWaiting] = useState(true);
-  const [ws, setWS] = useState<WebSocket | null>(null);
+  const [join, setJoin] = useState(false);
   const [name, setName] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -28,7 +27,7 @@ function App() {
     playVideoFromCamera();
   }, [videoRef])
 
-  if (waiting || !ws || !localStream) {
+  if (!join || !localStream) {
     return (
       <div className="bg-lightorange text-center h-screen w-screen flex justify-center">
         <div className="w-80 mx-auto md:w-96 lg:w-132">
@@ -41,12 +40,7 @@ function App() {
               }} ref={nameRef} />
               <Button type="submit" onClick={(_e) => {
                 if (nameRef.current === null || nameRef.current.value === "") return;
-                let websocket = new WebSocket("ws://localhost:8080/ws")
-                websocket.onopen = (_e) => {
-                  console.log("connection opened!")
-                }
-                setWS(websocket);
-                setWaiting(false);
+                setJoin(true);
               }} className="w-24 rounded-md text-white bg-darkorange text-xl h-10 shadow-xl mt-2 lg:mt-0 lg:ml-2 hover:bg-darkorange++">Join</Button>
             </div>
           </div>
@@ -56,7 +50,7 @@ function App() {
   }
 
   return (
-    <VideoChat localStream={localStream} websocket={ws} name={name} />
+    <VideoChat localStream={localStream} name={name} />
   )
 }
 

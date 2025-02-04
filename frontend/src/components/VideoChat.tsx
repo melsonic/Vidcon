@@ -4,7 +4,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Video from "./ui/video";
 
-export default function VideoChat({ localStream, websocket, name }: { localStream: MediaStream, websocket: WebSocket, name: string }) {
+export default function VideoChat({ localStream, name }: { localStream: MediaStream, name: string }) {
+    const [ws, setWS] = useState<WebSocket | null>(null);
     const localUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const remoteUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -16,8 +17,11 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     const [receivedMessages, setReceivedMessages] = useState<Array<string>>([]);
     const [flag, setFlag] = useState<boolean>(false);
     const msgRef = useRef<HTMLInputElement | null>(null);
+    const [remoteUserName, setRemoteUserName] = useState<string|null>(null);
 
     useEffect(() => {
+        let websocket = new WebSocket("ws://localhost:8080/ws")
+        setWS(websocket);
         websocket.onmessage = async (e) => {
             let message = e.data
             if (message === "start") {
@@ -45,6 +49,7 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                 pc.addEventListener('connectionstatechange', e => {
                     if (pc.connectionState === 'connected') {
                         console.log("Peers connected!!")
+                        websocket.send(JSON.stringify({'name': name}))
                     }
                 });
                 setCallingPeer(pc)
@@ -83,6 +88,7 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                     pc.addEventListener('connectionstatechange', e => {
                         if (pc?.connectionState === 'connected') {
                             console.log("Peers connected!!")
+                            websocket.send(JSON.stringify({'name': name}))
                         }
                     });
                     setReceivingPeer(pc)
@@ -109,6 +115,8 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
                     } catch (e) {
                         console.log('Error adding received ice candidate', e)
                     }
+                } else if(messageobj.name) {
+                    setRemoteUserName(messageobj.name);
                 }
             }
         }
@@ -142,8 +150,8 @@ export default function VideoChat({ localStream, websocket, name }: { localStrea
     return (
         <div className="flex flex-col p-8 min-h-screen lg:flex-row lg:h-screen bg-lightorange">
             <div className="w-80 mx-auto md:w-96 lg:w-140 lg:h-full lg:mx-0 flex-none flex flex-col lg:justify-between">
-                <Video videoRef={localUserVideoRef} localStream={localStream} />
-                <Video videoRef={remoteUserVideoRef} localStream={null}/>
+                <Video videoRef={localUserVideoRef} localStream={localStream} name={name} />
+                <Video videoRef={remoteUserVideoRef} localStream={null} name={remoteUserName} />
             </div>
             <div className="flex flex-col w-80 mx-auto border-2 border-black h-80 mt-2 md:w-96 lg:mx-0 lg:h-auto lg:mt-0 lg:ml-12 grow rounded-sm">
                 <MessageArea sent={sentMessages} received={receivedMessages} firstMessage={flag} />
