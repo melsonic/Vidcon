@@ -143,14 +143,14 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
             setRemoteUserName(null);
             setState(0);
         }
-    }, [state, callingPeer, receivingPeer, localStream, name, websocket])
+    }, [state])
 
     useEffect(() => {
         if (localUserVideoRef.current === null || localStream === null || localStream === undefined) return;
         const videoTrack = localStream.getVideoTracks()[0];
         const audioTrack = localStream.getAudioTracks()[0];
         localUserVideoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
-    }, [localStream])
+    }, [localStream, state])
 
     useEffect(() => {
         if (remoteUserVideoRef.current === null || remoteStream === null || remoteStream === undefined) return;
@@ -173,7 +173,7 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
         return () => {
             dataChannel.removeEventListener('message', stackMessage);
         }
-    }, [dataChannel, state, websocket]);
+    }, [dataChannel, state]);
 
     return (
         <div className="flex flex-col p-8 min-h-screen lg:flex-row lg:h-screen bg-lightorange">
