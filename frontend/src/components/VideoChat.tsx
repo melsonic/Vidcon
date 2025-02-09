@@ -8,8 +8,8 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
     const localUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const remoteUserVideoRef = useRef<HTMLVideoElement | null>(null);
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-    const [_callingPeer, setCallingPeer] = useState<RTCPeerConnection | null>(null);
-    const [_receivingPeer, setReceivingPeer] = useState<RTCPeerConnection | null>(null);
+    const [callingPeer, setCallingPeer] = useState<RTCPeerConnection | null>(null);
+    const [receivingPeer, setReceivingPeer] = useState<RTCPeerConnection | null>(null);
     const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
     const [message, setMessage] = useState<string>("");
     const [sentMessages, setSentMessages] = useState<Array<string>>([]);
@@ -28,15 +28,15 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
     }
 
     useEffect(() => {
-        console.log(_callingPeer)
-        console.log(_receivingPeer)
+        console.log(callingPeer)
+        console.log(receivingPeer)
         websocket.onmessage = async (e) => {
-            let message = e.data
+            const message = e.data
             if (message === "start") {
                 const conf = {
                     iceServers: [{ 'urls': 'stun:stun.l.google.com:19302' }],
                 }
-                let pc = new RTCPeerConnection(conf)
+                const pc = new RTCPeerConnection(conf)
                 localStream.getTracks().forEach(track => {
                     pc.addTrack(track, localStream)
                 })
@@ -66,14 +66,14 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
                 try {
                     messageobj = JSON.parse(message)
                 } catch (error) {
-                    console.log("invalid message")
+                    console.log("invalid message ", error)
                     return
                 }
                 if (messageobj.offer) {
                     const conf = {
                         iceServers: [{ 'urls': 'stun:stun.l.google.com:19302' }]
                     }
-                    let pc = new RTCPeerConnection(conf)
+                    const pc = new RTCPeerConnection(conf)
                     localStream.getTracks().forEach(track => {
                         pc.addTrack(track, localStream)
                     })
@@ -129,8 +129,8 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
             }
         }
         return () => {
-            _callingPeer?.close();
-            _receivingPeer?.close();
+            callingPeer?.close();
+            receivingPeer?.close();
             console.log("running exit")
             setDataChannel(null);
             setRemoteStream(null);
@@ -147,17 +147,17 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
 
     useEffect(() => {
         if (localUserVideoRef.current === null || localStream === null || localStream === undefined) return;
-        let videoTrack = localStream.getVideoTracks()[0];
-        let audioTrack = localStream.getAudioTracks()[0];
+        const videoTrack = localStream.getVideoTracks()[0];
+        const audioTrack = localStream.getAudioTracks()[0];
         localUserVideoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
-    }, [localStream, localUserVideoRef.current])
+    }, [localStream, state])
 
     useEffect(() => {
         if (remoteUserVideoRef.current === null || remoteStream === null || remoteStream === undefined) return;
-        let videoTrack = remoteStream.getVideoTracks()[0];
-        let audioTrack = remoteStream.getAudioTracks()[0];
+        const videoTrack = remoteStream.getVideoTracks()[0];
+        const audioTrack = remoteStream.getAudioTracks()[0];
         remoteUserVideoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
-    }, [remoteStream, remoteUserVideoRef.current, state])
+    }, [remoteStream, state])
 
     useEffect(() => {
         if (dataChannel === null) return;
@@ -173,7 +173,7 @@ export default function VideoChat({ websocket, localStream, name }: { websocket:
         return () => {
             dataChannel.removeEventListener('message', stackMessage);
         }
-    }, [dataChannel, state, websocket]);
+    }, [dataChannel, state]);
 
     return (
         <div className="flex flex-col p-8 min-h-screen lg:flex-row lg:h-screen bg-lightorange">
