@@ -1,7 +1,7 @@
 import { VideoCameraIcon, VideoCameraSlashIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { useEffect, useState } from "react";
 
-export default function Video({ videoRef, localStream, name }: { videoRef: React.MutableRefObject<HTMLVideoElement | null>, localStream: MediaStream | null, name: string | null }) {
+export default function Video({ videoRef, localStream, name, reset }: { videoRef: React.MutableRefObject<HTMLVideoElement | null>, localStream: MediaStream | null, name: string | null, reset: Function | null }) {
     const [camera, setCamera] = useState<boolean>(true);
     const [audio, setAudio] = useState<boolean>(true);
 
@@ -31,9 +31,9 @@ export default function Video({ videoRef, localStream, name }: { videoRef: React
             <video autoPlay className="w-full border-2 border-black bg-black aspect-[4/3] object-cover mb-2 lg:mb-0 rounded-sm" id="localVideo" ref={videoRef} />
             <>
                 {
-                    localStream === null &&
+                    localStream === null && reset !== null &&
                     <div className="flex absolute z-10 w-full bottom-6 justify-center">
-                        <XMarkIcon className="h-8 w-8 lg:h-10 lg:w-10 mx-2 bg-red-500 bg-opacity-70 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white" />
+                        <XMarkIcon className="h-8 w-8 lg:h-10 lg:w-10 mx-2 bg-red-500 bg-opacity-70 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white hover:scale-105" onClick={() => reset()} />
                     </div>
                 }
             </>
@@ -42,14 +42,14 @@ export default function Video({ videoRef, localStream, name }: { videoRef: React
                     localStream !== null &&
                     <div className="flex absolute z-10 w-full bottom-6 justify-center">
                         {!camera ?
-                            <VideoCameraIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-green-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70" onClick={() => setCamera(!camera)} />
+                            <VideoCameraIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-green-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70 hover:scale-105" onClick={() => setCamera(!camera)} />
                             :
-                            <VideoCameraSlashIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-red-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70" onClick={() => setCamera(!camera)} />
+                            <VideoCameraSlashIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-red-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70 hover:scale-105" onClick={() => setCamera(!camera)} />
                         }
                         {!audio ?
-                            <SpeakerWaveIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-green-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70" onClick={() => setAudio(!audio)} />
+                            <SpeakerWaveIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-green-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70 hover:scale-105" onClick={() => setAudio(!audio)} />
                             :
-                            <SpeakerXMarkIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-red-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70" onClick={() => setAudio(!audio)} />
+                            <SpeakerXMarkIcon className="h-8 w-8 lg:h-12 lg:w-12 mx-2 bg-red-500 rounded-full p-1 lg:p-2 text-gray-200 hover:text-white bg-opacity-70 hover:scale-105" onClick={() => setAudio(!audio)} />
                         }
                     </div>
                 }
