@@ -17,8 +17,8 @@ function App() {
         if (videoRef.current === null) return;
         const constraints = { 'video': true, 'audio': true };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        let videoTrack = stream.getVideoTracks()[0];
-        let audioTrack = stream.getAudioTracks()[0];
+        const videoTrack = stream.getVideoTracks()[0];
+        const audioTrack = stream.getAudioTracks()[0];
         videoRef.current.srcObject = new MediaStream([videoTrack, audioTrack])
         setLocalStream(stream);
       } catch (error) {
@@ -39,10 +39,10 @@ function App() {
               <Input type="text" placeholder="Name" className="rounded-md border-black w-80 h-10 md:w-96 lg:w-104 lg:mr-2" onChange={(e) => {
                 setName(e.target.value);
               }} ref={nameRef} />
-              <Button type="submit" onClick={(_e) => {
+              <Button type="submit" onClick={() => {
                 // if (nameRef.current === null || nameRef.current.value === "") return;
-                let websocket = new WebSocket("ws://localhost:8080/ws")
-                websocket.onopen = (_e) => {
+                const websocket = new WebSocket("ws://localhost:8080/ws")
+                websocket.onopen = () => {
                   console.log("connection opened!")
                 }
                 setWS(websocket);

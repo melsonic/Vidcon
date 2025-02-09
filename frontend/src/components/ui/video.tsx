@@ -11,7 +11,7 @@ export default function Video({ videoRef, localStream, name, reset }: { videoRef
         } else {
             localStream?.getVideoTracks().forEach(videoTrack => videoTrack.enabled = true)
         }
-    }, [camera])
+    }, [localStream, camera])
 
     useEffect(() => {
         if (!audio) {
@@ -19,7 +19,7 @@ export default function Video({ videoRef, localStream, name, reset }: { videoRef
         } else {
             localStream?.getAudioTracks().forEach(audioTrack => audioTrack.enabled = true)
         }
-    }, [audio])
+    }, [localStream, audio])
 
     return (
         <div className="relative">
